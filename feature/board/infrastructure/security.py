@@ -1,4 +1,5 @@
 import bcrypt
+
 from feature.board.domain.service import PasswordHasher
 
 

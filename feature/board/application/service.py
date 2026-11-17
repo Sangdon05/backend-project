@@ -7,7 +7,6 @@ from feature.board.domain.repositories.board_repository import BoardRepository
 from feature.board.domain.repositories.comment_repository import CommentRepository
 from feature.board.domain.repositories.post_repository import PostRepository
 from feature.board.domain.service import PasswordHasher
-
 from shared.core.exceptions import (
     ConflictException,
     ForbiddenException,

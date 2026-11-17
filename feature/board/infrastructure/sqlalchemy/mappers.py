@@ -1,7 +1,11 @@
 from feature.board.domain.board import Authority, Board
 from feature.board.domain.enums import Role
 from feature.board.domain.post import Author, BoardInfo, Comment, GuestPassword, Post
-from feature.board.infrastructure.sqlalchemy.models import BoardModel, CommentModel, PostModel
+from feature.board.infrastructure.sqlalchemy.models import (
+    BoardModel,
+    CommentModel,
+    PostModel,
+)
 
 
 class BoardMapper:

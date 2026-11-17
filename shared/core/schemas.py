@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any, TypeVar
 
 from pydantic import BaseModel, Field
@@ -17,7 +17,7 @@ class APIResponse[T](BaseModel):
     )
     data: T | None = Field(None, description="성공시 응답 데이터")
     responded_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
+        default_factory=lambda: datetime.now(UTC),
         description="응답 날짜시간(UTC)",
     )
 

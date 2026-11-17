@@ -1,10 +1,9 @@
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from feature.board.domain.enums import Role
 from feature.board.domain.service import PasswordHasher
-
 from shared.core.exceptions import BadRequestException, ValidationException
 
 """
@@ -125,12 +124,12 @@ class GuestPassword:
 class Post:
     """게시글 엔티티"""
 
-    board_info: BoardInfo  # 게시판 정보
+    board_info: BoardInfo
     title: str
     content: str
     author: Author
     guest_password: GuestPassword | None = None
-    post_id: int | None = None  # 게시글 ID
+    post_id: int | None = None
 
     created_at: datetime | None = None
     modified_at: datetime | None = None
@@ -219,12 +218,12 @@ class Post:
 
         self.title = title.strip()
         self.content = content.strip()
-        self.modified_at = datetime.now(timezone.utc)
+        self.modified_at = datetime.now(UTC)
 
     def delete(self) -> None:
         if self.is_deleted:
             raise BadRequestException("이미 삭제된 게시글입니다.")
-        self.deleted_at = datetime.now(timezone.utc)
+        self.deleted_at = datetime.now(UTC)
 
     def can_modify_or_delete(
         self,
@@ -335,12 +334,12 @@ class Comment:
             )
 
         self.content = content.strip()
-        self.modified_at = datetime.now(timezone.utc)
+        self.modified_at = datetime.now(UTC)
 
     def delete(self) -> None:
         if self.is_deleted:
             raise BadRequestException(message="이미 삭제된 댓글입니다.")
-        self.deleted_at = datetime.now(timezone.utc)
+        self.deleted_at = datetime.now(UTC)
 
     def can_modify_or_delete(
         self,

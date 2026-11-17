@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import DateTime
 from sqlalchemy.ext.asyncio import AsyncEngine
@@ -6,7 +6,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
 def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 # 데이터베이스 테이블의 기준(베이스 클래스) 정의

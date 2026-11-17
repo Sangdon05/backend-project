@@ -1,11 +1,10 @@
 import re
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Literal
 
 from feature.user.domain.service import PasswordHasher
-
 from shared.core.exceptions import (
     BadRequestException,
     ForbiddenException,
@@ -100,7 +99,7 @@ class User:
 
         # 해싱 및 상태 갱신
         self.password_hash = hasher.hash(new_password)
-        self.modified_at = datetime.now(timezone.utc)
+        self.modified_at = datetime.now(UTC)
 
     def withdraw(self, requester: "User") -> None:
         """회원 탈퇴 처리 비즈니스 로직"""
@@ -118,7 +117,7 @@ class User:
                 error_code="WITHDRAW_PERMISSION_DENIED",
             )
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         self.resign = True
         self.deleted_at = now
         self.modified_at = now

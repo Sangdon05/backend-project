@@ -1,11 +1,8 @@
 import uuid
-from datetime import datetime
 
 from sqlalchemy import (
     UUID,
     BigInteger,
-    Boolean,
-    DateTime,
     ForeignKey,
     Index,
     Integer,

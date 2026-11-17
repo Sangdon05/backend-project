@@ -3,7 +3,6 @@ import uuid
 from feature.user.domain.repository import UserRepository
 from feature.user.domain.service import PasswordHasher
 from feature.user.domain.user import User
-
 from shared.core.exceptions import ConflictException, NotFoundException
 
 

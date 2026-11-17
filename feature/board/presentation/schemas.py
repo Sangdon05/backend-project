@@ -1,10 +1,11 @@
 import uuid
 from datetime import datetime
 
+from pydantic import BaseModel, ConfigDict, Field
+
 from feature.board.domain.board import Board
 from feature.board.domain.enums import PostSearchType, Role
 from feature.board.domain.post import Comment, Post
-from pydantic import BaseModel, ConfigDict, Field
 
 
 class AuthoritySchema(BaseModel):

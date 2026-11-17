@@ -1,9 +1,10 @@
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from feature.board.domain.board import Board
 from feature.board.domain.repositories.board_repository import BoardRepository
 from feature.board.infrastructure.sqlalchemy.mappers import BoardMapper
 from feature.board.infrastructure.sqlalchemy.models import BoardModel
-from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class SqlAlchemyBoardRepository(BoardRepository):
