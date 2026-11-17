@@ -8,14 +8,17 @@ from fastapi import FastAPI  # noqa: E402
 
 from feature.auth.presentation.routers.v1.router import router as auth_router  # noqa: E402
 from feature.user.presentation.routers.v1.router import router as user_router  # noqa: E402
+from shared.core import database  # noqa: E402
 from shared.core.database import close_db  # noqa: E402
 from shared.core.exception_handlers import register_exception_handlers  # noqa: E402
+from shared.core.models import create_tables  # noqa: E402
 from wiring.auth import wire_auth  # noqa: E402
 from wiring.user import wire_user  # noqa: E402
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    await create_tables(database.engine)
     yield
     await close_db()
 
