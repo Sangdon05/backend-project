@@ -14,7 +14,7 @@ from feature.user.presentation.schemas import (
     SignUpUserRequest,
     UserResponse,
 )
-from shared.core.logger import logger
+from shared.core.exceptions import ForbiddenException
 from shared.core.schemas import APIResponse
 
 router = APIRouter(prefix="/v1/users", tags=["Users"])
@@ -46,13 +46,18 @@ async def sign_up(
     response_model=APIResponse[None],
     status_code=status.HTTP_200_OK,
     summary="비밀번호 변경",
+    description="로그인한 본인의 비밀번호만 변경할 수 있습니다.",
 )
 async def change_password(
     user_id: uuid.UUID,
     request: ChangePasswordRequest,
+    current_user: Annotated[User, Depends(get_current_user)],
     user_service: Annotated[UserService, Depends(provide_user_service)],
 ):
     """비밀번호 변경 엔드포인트"""
+    if current_user.id != user_id:
+        raise ForbiddenException("본인의 비밀번호만 변경할 수 있습니다.")
+
     await user_service.change_password(
         user_id=user_id,
         old_password=request.old_password,
@@ -61,6 +66,12 @@ async def change_password(
     return APIResponse.ok(message="비밀번호가 성공적으로 변경되었습니다.")
 
 
-@router.get("/me")
-async def get_logged_user(user: User = Depends(get_current_user)):
-    logger.info(f"user: {user}")
+@router.get(
+    "/me",
+    response_model=APIResponse[UserResponse],
+    status_code=status.HTTP_200_OK,
+    summary="내 정보 조회",
+)
+async def get_logged_user(user: Annotated[User, Depends(get_current_user)]):
+    """로그인한 사용자 정보 조회"""
+    return APIResponse.ok(data=UserResponse.model_validate(user))

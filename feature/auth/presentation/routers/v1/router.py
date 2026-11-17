@@ -1,15 +1,16 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from feature.auth.application.service import AuthService
-from feature.auth.presentation.dependencies import provide_auth_service
+from feature.auth.presentation.dependencies import (
+    get_bearer_token,
+    provide_auth_service,
+)
 from feature.auth.presentation.schemas import LoginRequest, TokenResponse
 from shared.core.schemas import APIResponse
 
 router = APIRouter(prefix="/v1/auth", tags=["Auth"])
-security = HTTPBearer()
 
 
 @router.post(
@@ -43,8 +44,8 @@ async def login(
     description="현재 전달된 JWT 액세스 토큰의 식별자(jti)를 블랙리스트 DB에 등록하여 세션을 무효화합니다.",
 )
 async def logout(
-    credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],
+    token: Annotated[str, Depends(get_bearer_token)],
     auth_service: Annotated[AuthService, Depends(provide_auth_service)],
 ):
     """현재 사용 중인 토큰을 블랙리스트에 등록하여 즉시 만료 처리"""
-    await auth_service.logout(credentials.credentials)
+    await auth_service.logout(token)

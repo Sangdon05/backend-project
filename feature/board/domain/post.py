@@ -1,10 +1,9 @@
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from board.domain.enums import Role
-from board.domain.service import PasswordHasher
-
+from feature.board.domain.enums import Role
+from feature.board.domain.service import PasswordHasher
 from shared.core.exceptions import BadRequestException, ValidationException
 
 """
@@ -125,12 +124,12 @@ class GuestPassword:
 class Post:
     """게시글 엔티티"""
 
-    board_info: BoardInfo  # 게시판 정보
+    board_info: BoardInfo
     title: str
     content: str
     author: Author
     guest_password: GuestPassword | None = None
-    post_id: int | None = None  # 게시글 ID
+    post_id: int | None = None
 
     created_at: datetime | None = None
     modified_at: datetime | None = None
@@ -219,12 +218,12 @@ class Post:
 
         self.title = title.strip()
         self.content = content.strip()
-        self.modified_at = datetime.now(timezone.utc)
+        self.modified_at = datetime.now(UTC)
 
     def delete(self) -> None:
         if self.is_deleted:
             raise BadRequestException("이미 삭제된 게시글입니다.")
-        self.deleted_at = datetime.now(timezone.utc)
+        self.deleted_at = datetime.now(UTC)
 
     def can_modify_or_delete(
         self,
@@ -335,12 +334,30 @@ class Comment:
             )
 
         self.content = content.strip()
-        self.modified_at = datetime.now(timezone.utc)
+        self.modified_at = datetime.now(UTC)
 
     def delete(self) -> None:
         if self.is_deleted:
             raise BadRequestException(message="이미 삭제된 댓글입니다.")
-        self.deleted_at = datetime.now(timezone.utc)
+        self.deleted_at = datetime.now(UTC)
+
+    def can_modify_or_delete(
+        self,
+        requester_id: uuid.UUID | None,
+        user_role: Role,
+        raw_guest_password: str | None,
+        hasher: PasswordHasher,
+    ) -> bool:
+        """수정/삭제 권한 확인 (관리자 -> 회원 본인 -> 비회원 비밀번호 일치 순)"""
+        if user_role == Role.ADMIN:
+            return True
+
+        if not self.author.is_guest:
+            return self.author.is_owner(requester_id)
+
+        if not raw_guest_password:
+            return False
+        return self.verify_guest_password(raw_guest_password, hasher)
 
 
 # Entities 정의 E

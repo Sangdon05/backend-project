@@ -1,7 +1,11 @@
-from board.domain.board import Authority, Board
-from board.domain.enums import Role
-from board.domain.post import Author, BoardInfo, Comment, GuestPassword, Post
-from board.infrastructure.sqlalchemy.models import BoardModel, CommentModel, PostModel
+from feature.board.domain.board import Authority, Board
+from feature.board.domain.enums import Role
+from feature.board.domain.post import Author, BoardInfo, Comment, GuestPassword, Post
+from feature.board.infrastructure.sqlalchemy.models import (
+    BoardModel,
+    CommentModel,
+    PostModel,
+)
 
 
 class BoardMapper:
@@ -31,7 +35,7 @@ class BoardMapper:
             board_id=domain.board_id,
             board_name=domain.board_name,
             page_size=domain.page_size,
-            edit_role=domain.authority.edit_role_value,
+            edit_role=domain.authority.edit_role.value,
             view_role=domain.authority.view_role.value,
             list_role=domain.authority.list_role.value,
             comment_list_role=domain.authority.comment_list_role.value,
@@ -45,6 +49,7 @@ class BoardMapper:
 class PostMapper:
     """Post 도메인 엔티티 <-> PostModel 상호 변환기"""
 
+    @staticmethod
     def to_domain(model: PostModel) -> Post:
         guest_pw = (
             GuestPassword.from_hash(model.guest_password)
@@ -54,7 +59,9 @@ class PostMapper:
 
         return Post(
             post_id=model.post_id,
-            board_id=model.board_id,
+            board_info=BoardInfo(
+                board_id=model.board_id, board_name=model.board.board_name
+            ),
             title=model.title,
             content=model.content,
             author=Author(author_name=model.author_name, author_id=model.author_id),
@@ -72,8 +79,8 @@ class PostMapper:
             title=domain.title,
             content=domain.content,
             author_name=domain.author.author_name,
-            author_id=domain.author.author_name,
-            guest_password=guest_password(
+            author_id=domain.author.author_id,
+            guest_password=(
                 domain.guest_password.hashed_value if domain.guest_password else None
             ),
             created_at=domain.created_at,
@@ -92,17 +99,15 @@ class CommentMapper:
             comment_id=model.comment_id,
             post_id=model.post_id,
             content=model.content,
-            author=Author(
-                author_name=model.author.author_name, author_id=domain.author.author_id
-            ),
+            author=Author(author_name=model.author_name, author_id=model.author_id),
             guest_password=(
                 GuestPassword.from_hash(model.guest_password)
                 if model.guest_password
                 else None
             ),
-            created_at=domain.created_at,
-            modified_at=domain.modified_at,
-            deleted_at=domain.deleted_at,
+            created_at=model.created_at,
+            modified_at=model.modified_at,
+            deleted_at=model.deleted_at,
         )
 
     @staticmethod

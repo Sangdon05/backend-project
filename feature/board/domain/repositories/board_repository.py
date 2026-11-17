@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from board.domain.board import Board
+from feature.board.domain.board import Board
 
 
 class BoardRepository(ABC):
@@ -14,7 +14,7 @@ class BoardRepository(ABC):
 
     @abstractmethod
     async def exists_by_id(self, board_id: str) -> bool:
-        """해당 게시판 ID가 이미 존재하는지 여부 확인"""
+        """해당 게시판 ID가 이미 존재하는지 여부 확인 (삭제된 게시판 포함)"""
 
     @abstractmethod
     async def save(self, board: Board) -> Board:

@@ -1,5 +1,6 @@
 import bcrypt
-from board.domain.service import PasswordHasher
+
+from feature.board.domain.service import PasswordHasher
 
 
 class BcryptPasswordHasher(PasswordHasher):

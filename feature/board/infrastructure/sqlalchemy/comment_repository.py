@@ -1,9 +1,10 @@
-from board.domain.post import Comment
-from board.domain.repository.comment_repository import CommentRepository
-from board.infrastructure.sqlalchemy.mappers import CommentMapper
-from board.infrastructure.sqlalchemy.models import CommentModel
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from feature.board.domain.post import Comment
+from feature.board.domain.repositories.comment_repository import CommentRepository
+from feature.board.infrastructure.sqlalchemy.mappers import CommentMapper
+from feature.board.infrastructure.sqlalchemy.models import CommentModel
 
 
 class SqlAlchemyCommentRepository(CommentRepository):

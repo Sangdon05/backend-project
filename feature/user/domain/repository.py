@@ -1,7 +1,7 @@
 import uuid
 from abc import ABC, abstractmethod
 
-from user.domain.user import User
+from feature.user.domain.user import User
 
 
 class UserRepository(ABC):

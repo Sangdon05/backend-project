@@ -1,9 +1,8 @@
 import re
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from board.domain.enums import Role
-
+from feature.board.domain.enums import Role
 from shared.core.exceptions import BadRequestException, ValidationException
 
 """
@@ -162,9 +161,9 @@ class Board:
         self.page_size = page_size
         if authority is not None:
             self.authority = authority
-        self.modified_at = datetime.now(timezone.utc)
+        self.modified_at = datetime.now(UTC)
 
     def delete(self) -> None:
         if self.is_deleted:
             raise BadRequestException(message="이미 삭제된 게시판입니다.")
-        self.deleted_at = datetime.now(timezone.utc)
+        self.deleted_at = datetime.now(UTC)

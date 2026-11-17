@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any, TypeVar
 
 from pydantic import BaseModel, Field
@@ -17,7 +17,7 @@ class APIResponse[T](BaseModel):
     )
     data: T | None = Field(None, description="성공시 응답 데이터")
     responded_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
+        default_factory=lambda: datetime.now(UTC),
         description="응답 날짜시간(UTC)",
     )
 
@@ -36,14 +36,14 @@ class APIResponse[T](BaseModel):
             data=data,
         )
 
-    @classmethod
+    @staticmethod
     def fail(
-        cls,
         message: str,
         code: str = "BAD_REQUEST",
         errors: dict[str, list[str]] | list[str] | Any | None = None,
     ) -> "APIResponse[None]":
-        return cls(
+        # 실패 응답은 data가 항상 없으므로 호출 측 T와 무관하게 APIResponse[None]으로 생성
+        return APIResponse[None](
             success=False,
             code=code,
             message=message,

@@ -1,11 +1,10 @@
 import re
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Literal
 
-from user.domain.service import PasswordHasher
-
+from feature.user.domain.service import PasswordHasher
 from shared.core.exceptions import (
     BadRequestException,
     ForbiddenException,
@@ -29,13 +28,15 @@ PASSWORD_REGEX = re.compile(
     r"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$"
 )
 
+type UserRole = Literal["USER", "ADMIN"]
+
 
 @dataclass
 class User:
     email: str
     name: str
     password_hash: str
-    role: Literal["USER", "ADMIN"]
+    role: UserRole
     resign: bool  # 탈퇴 여부
 
     # 기본값이 있는 필드는 아래쪽 위치
@@ -55,7 +56,7 @@ class User:
         name: str,
         raw_password: str,
         hasher: PasswordHasher,
-        role: Literal["USER", "ADMIN"] = "USER",
+        role: UserRole = "USER",
     ) -> "User":
         cls._validate_password(raw_password)
         password_hash = hasher.hash(raw_password)
@@ -100,7 +101,7 @@ class User:
 
         # 해싱 및 상태 갱신
         self.password_hash = hasher.hash(new_password)
-        self.modified_at = datetime.now(timezone.utc)
+        self.modified_at = datetime.now(UTC)
 
     def withdraw(self, requester: "User") -> None:
         """회원 탈퇴 처리 비즈니스 로직"""
@@ -118,7 +119,7 @@ class User:
                 error_code="WITHDRAW_PERMISSION_DENIED",
             )
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         self.resign = True
         self.deleted_at = now
         self.modified_at = now
