@@ -1,6 +1,7 @@
 from datetime import datetime
+from typing import cast
 
-from sqlalchemy import delete, select
+from sqlalchemy import CursorResult, delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from feature.auth.domain.repository import TokenBlacklistRepository
@@ -28,6 +29,6 @@ class SqlAlchemyTokenBlacklistRepository(TokenBlacklistRepository):
         stmt = delete(TokenBlacklistModel).where(
             TokenBlacklistModel.expired_at <= current_time
         )
-        result = await self.session.execute(stmt)
-        await self.session.flush()
+        # DML 실행 결과는 런타임에 CursorResult이지만 execute()의 타입 선언은 Result라 명시적으로 좁힘
+        result = cast(CursorResult, await self.session.execute(stmt))
         return result.rowcount
