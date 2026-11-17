@@ -1,7 +1,6 @@
 from typing import Annotated
 
 from fastapi import Depends
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from feature.auth.application.service import AuthService
 from feature.user.domain.repository import UserRepository
@@ -11,9 +10,7 @@ from feature.user.presentation.dependencies import (
     provide_user_repository,
 )
 from shared.core.exceptions import ForbiddenException, UnauthorizedException
-
-# auto_error=False: 인증 실패 응답을 APIResponse 포맷(401)으로 통일하기 위함
-bearer_scheme = HTTPBearer(auto_error=False)
+from shared.core.security import BearerCredentials
 
 
 def provide_auth_service() -> AuthService:
@@ -21,7 +18,7 @@ def provide_auth_service() -> AuthService:
 
 
 async def get_bearer_token(
-    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_scheme)],
+    credentials: BearerCredentials,
 ) -> str:
     """Authorization: Bearer 헤더에서 토큰 문자열 추출"""
     if credentials is None:
@@ -50,7 +47,7 @@ async def authenticate_user(
 
 
 async def authenticate_optional_user(
-    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_scheme)],
+    credentials: BearerCredentials,
     auth_service: Annotated[AuthService, Depends(provide_auth_service)],
     user_repo: Annotated[UserRepository, Depends(provide_user_repository)],
 ) -> User | None:
