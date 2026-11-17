@@ -28,13 +28,15 @@ PASSWORD_REGEX = re.compile(
     r"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$"
 )
 
+type UserRole = Literal["USER", "ADMIN"]
+
 
 @dataclass
 class User:
     email: str
     name: str
     password_hash: str
-    role: Literal["USER", "ADMIN"]
+    role: UserRole
     resign: bool  # 탈퇴 여부
 
     # 기본값이 있는 필드는 아래쪽 위치
@@ -54,7 +56,7 @@ class User:
         name: str,
         raw_password: str,
         hasher: PasswordHasher,
-        role: Literal["USER", "ADMIN"] = "USER",
+        role: UserRole = "USER",
     ) -> "User":
         cls._validate_password(raw_password)
         password_hash = hasher.hash(raw_password)

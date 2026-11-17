@@ -1,10 +1,9 @@
 import uuid
-from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, DateTime, String, Uuid
+from sqlalchemy import Boolean, String, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 
-from feature.user.domain.user import User
+from feature.user.domain.user import User, UserRole
 from shared.core.models import Base, DateTimeBase
 
 
@@ -19,7 +18,9 @@ class UserModel(Base, DateTimeBase):
     )
     name: Mapped[str] = mapped_column(String(50), nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
-    role: Mapped[str] = mapped_column(String(20), default="USER", nullable=False)
+    role: Mapped[UserRole] = mapped_column(
+        String(20), default="USER", nullable=False
+    )
     resign: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     def to_user(self) -> User:
