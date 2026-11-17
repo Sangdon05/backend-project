@@ -4,18 +4,24 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from fastapi import FastAPI  # noqa: E402
+from fastapi import FastAPI
 
-from feature.auth.presentation.routers.v1.router import router as auth_router  # noqa: E402
-from feature.board.presentation.routers.v1.router import router as board_router  # noqa: E402
-from feature.user.presentation.routers.v1.router import router as user_router  # noqa: E402
-from shared.core import database  # noqa: E402
-from shared.core.database import close_db  # noqa: E402
-from shared.core.exception_handlers import register_exception_handlers  # noqa: E402
-from shared.core.models import create_tables  # noqa: E402
-from wiring.auth import wire_auth  # noqa: E402
-from wiring.board import wire_board  # noqa: E402
-from wiring.user import wire_user  # noqa: E402
+from feature.auth.presentation.routers.v1.router import (
+    router as auth_router,
+)
+from feature.board.presentation.routers.v1.router import (
+    router as board_router,
+)
+from feature.user.presentation.routers.v1.router import (
+    router as user_router,
+)
+from shared.core import database
+from shared.core.database import close_db
+from shared.core.exception_handlers import register_exception_handlers
+from shared.core.models import create_tables
+from wiring.auth import wire_auth
+from wiring.board import wire_board
+from wiring.user import wire_user
 
 
 @asynccontextmanager
