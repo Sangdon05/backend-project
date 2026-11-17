@@ -36,14 +36,14 @@ class APIResponse[T](BaseModel):
             data=data,
         )
 
-    @classmethod
+    @staticmethod
     def fail(
-        cls,
         message: str,
         code: str = "BAD_REQUEST",
         errors: dict[str, list[str]] | list[str] | Any | None = None,
     ) -> "APIResponse[None]":
-        return cls(
+        # 실패 응답은 data가 항상 없으므로 호출 측 T와 무관하게 APIResponse[None]으로 생성
+        return APIResponse[None](
             success=False,
             code=code,
             message=message,
