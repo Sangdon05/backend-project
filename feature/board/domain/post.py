@@ -2,8 +2,8 @@ import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
 
-from board.domain.enums import Role
-from board.domain.service import PasswordHasher
+from feature.board.domain.enums import Role
+from feature.board.domain.service import PasswordHasher
 
 from shared.core.exceptions import BadRequestException, ValidationException
 

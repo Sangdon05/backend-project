@@ -1,19 +1,22 @@
-import os
 import uuid
 from datetime import UTC, datetime, timedelta
 
 import jwt
-from auth.domain.entities import TokenPayload
-from auth.domain.service import TokenProvider
+
+from feature.auth.domain.entities import TokenPayload
+from feature.auth.domain.service import TokenProvider
+from shared.core.exceptions import UnauthorizedException
 
 
 class JwtTokenProvider(TokenProvider):
     def __init__(
         self,
-        secret_key: str = os.getenv("JWT_SECRET_KEY", ""),
+        secret_key: str,
         algorithm: str = "HS512",
         access_token_expire_minutes: int = 60,
     ) -> None:
+        if not secret_key:
+            raise ValueError("JWT_SECRET_KEY가 설정되지 않았습니다.")
         self.secret_key = secret_key
         self.algorithm = algorithm
         self.expire_minutes = access_token_expire_minutes
@@ -32,9 +35,23 @@ class JwtTokenProvider(TokenProvider):
         return encoded_jwt, jti, expired_at, expires_in
 
     def decode_token(self, token: str) -> TokenPayload:
-        payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
-        return TokenPayload(
-            user_id=uuid.UUID(payload["sub"]),
-            jti=payload["jti"],
-            exp=datetime.fromtimestamp(payload["exp"], tz=UTC),
-        )
+        try:
+            payload = jwt.decode(
+                token,
+                self.secret_key,
+                algorithms=[self.algorithm],
+                options={"require": ["sub", "jti", "exp"]},
+            )
+            return TokenPayload(
+                user_id=uuid.UUID(payload["sub"]),
+                jti=payload["jti"],
+                exp=datetime.fromtimestamp(payload["exp"], tz=UTC),
+            )
+        except jwt.ExpiredSignatureError as e:
+            raise UnauthorizedException(
+                "토큰이 만료되었습니다.", error_code="TOKEN_EXPIRED"
+            ) from e
+        except (jwt.InvalidTokenError, ValueError) as e:
+            raise UnauthorizedException(
+                "유효하지 않은 토큰입니다.", error_code="INVALID_TOKEN"
+            ) from e

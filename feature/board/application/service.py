@@ -1,12 +1,12 @@
 import uuid
 
-from board.domain.board import Authority, Board
-from board.domain.enums import PostSearchType, Role
-from board.domain.post import Author, Comment, Post
-from board.domain.repository.board_repository import BoardRepository
-from board.domain.repository.comment_repository import CommentRepository
-from board.domain.repository.post_repository import PostRepository
-from board.domain.service import PasswordHasher
+from feature.board.domain.board import Authority, Board
+from feature.board.domain.enums import PostSearchType, Role
+from feature.board.domain.post import Author, Comment, Post
+from feature.board.domain.repositories.board_repository import BoardRepository
+from feature.board.domain.repositories.comment_repository import CommentRepository
+from feature.board.domain.repositories.post_repository import PostRepository
+from feature.board.domain.service import PasswordHasher
 
 from shared.core.exceptions import (
     ConflictException,

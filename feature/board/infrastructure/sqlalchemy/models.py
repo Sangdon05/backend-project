@@ -65,7 +65,8 @@ class PostModel(Base, DateTimeBase):
 
     guest_password: Mapped[str | None] = mapped_column(String(65), nullable=True)
 
-    board: Mapped["BoardModel"] = relationship("BoardModel")
+    # 매퍼가 board_name을 채우기 위해 즉시 로딩 (async 지연 로딩 불가)
+    board: Mapped["BoardModel"] = relationship("BoardModel", lazy="joined")
 
 
 class CommentModel(Base, DateTimeBase):

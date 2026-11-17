@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Literal
 
-from user.domain.service import PasswordHasher
+from feature.user.domain.service import PasswordHasher
 
 from shared.core.exceptions import (
     BadRequestException,

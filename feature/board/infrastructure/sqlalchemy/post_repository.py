@@ -1,11 +1,11 @@
-from board.domain.enums import PostSearchType
-from board.domain.post import Post
-from board.domain.repository.post_repository import PostRepository
-from board.infrastructure.sqlalchemy.mappers import PostMapper
-from board.infrastructure.sqlalchemy.models import PostModel
+from feature.board.domain.enums import PostSearchType
+from feature.board.domain.post import Post
+from feature.board.domain.repositories.post_repository import PostRepository
+from feature.board.infrastructure.sqlalchemy.mappers import PostMapper
+from feature.board.infrastructure.sqlalchemy.models import PostModel
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from user.infrastructure.models import UserModel
+from feature.user.infrastructure.models import UserModel
 
 
 class SqlAlchemyPostRepository(PostRepository):

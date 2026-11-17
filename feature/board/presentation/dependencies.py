@@ -1,9 +1,9 @@
-from board.application.service import BoardService, CommentService, PostService
-from board.domain.enums import Role
-from board.domain.post import Author
-from board.domain.repository.board_repository import BoardRepository
-from board.domain.repository.comment_repository import CommentRepository
-from board.domain.repository.post_repository import PostRepository
+from feature.board.application.service import BoardService, CommentService, PostService
+from feature.board.domain.enums import Role
+from feature.board.domain.post import Author
+from feature.board.domain.repositories.board_repository import BoardRepository
+from feature.board.domain.repositories.comment_repository import CommentRepository
+from feature.board.domain.repositories.post_repository import PostRepository
 
 
 # Repository 의존성

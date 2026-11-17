@@ -1,9 +1,9 @@
 import uuid
 from datetime import datetime
 
-from board.domain.board import Board
-from board.domain.enums import PostSearchType, Role
-from board.domain.post import Comment, Post
+from feature.board.domain.board import Board
+from feature.board.domain.enums import PostSearchType, Role
+from feature.board.domain.post import Comment, Post
 from pydantic import BaseModel, ConfigDict, Field
 
 

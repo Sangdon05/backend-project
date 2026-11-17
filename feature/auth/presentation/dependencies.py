@@ -1,14 +1,51 @@
 from typing import Annotated
 
-from auth.application.service import AuthService
 from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+
+from feature.auth.application.service import AuthService
 from feature.user.domain.repository import UserRepository
 from feature.user.domain.user import User
-from feature.user.presentation.dependencies import provide_user_repository
-
+from feature.user.presentation.dependencies import (
+    get_current_user,
+    provide_user_repository,
+)
 from shared.core.exceptions import ForbiddenException, UnauthorizedException
+
+# auto_error=False: 인증 실패 응답을 APIResponse 포맷(401)으로 통일하기 위함
+bearer_scheme = HTTPBearer(auto_error=False)
 
 
 def provide_auth_service() -> AuthService:
     raise NotImplementedError("AuthService 의존성이 주입되지 않았습니다.")
+
+
+async def get_bearer_token(
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_scheme)],
+) -> str:
+    """Authorization: Bearer 헤더에서 토큰 문자열 추출"""
+    if credentials is None:
+        raise UnauthorizedException("인증 토큰이 필요합니다.")
+    return credentials.credentials
+
+
+async def authenticate_user(
+    token: Annotated[str, Depends(get_bearer_token)],
+    auth_service: Annotated[AuthService, Depends(provide_auth_service)],
+    user_repo: Annotated[UserRepository, Depends(provide_user_repository)],
+) -> User:
+    """토큰 검증(서명/만료/블랙리스트) 후 활성 사용자 반환 — get_current_user 구현체"""
+    payload = await auth_service.authenticate_token(token)
+    user = await user_repo.find_by_id(payload.user_id)
+    if not user or user.resign:
+        raise UnauthorizedException("유효하지 않은 사용자입니다.")
+    return user
+
+
+async def authorize_admin(
+    user: Annotated[User, Depends(get_current_user)],
+) -> User:
+    """관리자 권한 검증 — require_admin 구현체"""
+    if user.role != "ADMIN":
+        raise ForbiddenException("관리자 권한이 필요합니다.")
+    return user

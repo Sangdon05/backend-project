@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from board.domain.enums import PostSearchType
-from board.domain.post import Post
+from feature.board.domain.enums import PostSearchType
+from feature.board.domain.post import Post
 
 
 class PostRepository(ABC):

@@ -2,7 +2,7 @@ import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
-from board.domain.enums import Role
+from feature.board.domain.enums import Role
 
 from shared.core.exceptions import BadRequestException, ValidationException
 

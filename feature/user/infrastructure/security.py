@@ -1,5 +1,5 @@
 import bcrypt
-from user.domain.service import PasswordHasher
+from feature.user.domain.service import PasswordHasher
 
 
 class BcryptPasswordHasher(PasswordHasher):
