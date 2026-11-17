@@ -103,14 +103,6 @@ class UpdatePostRequest(BaseModel):
     )
 
 
-class DeletePostRequest(BaseModel):
-    """게시글 삭제 요청 (비회원용)"""
-
-    guest_password: str | None = Field(
-        default=None, description="비회원 작성글인 경우 비밀번호"
-    )
-
-
 class PostSearchQuery(BaseModel):
     """게시글 목록 페이징 및 키워드 검색 쿼리 파라미터 DTO"""
 
@@ -221,14 +213,6 @@ class UpdateCommentRequest(BaseModel):
     """댓글 수정 요청"""
 
     content: str = Field(min_length=1, description="수정할 댓글 내용")
-    guest_password: str | None = Field(
-        default=None, description="비회원 댓글인 경우 비밀번호"
-    )
-
-
-class DeleteCommentRequest(BaseModel):
-    """댓글 삭제 요청 (비회원용)"""
-
     guest_password: str | None = Field(
         default=None, description="비회원 댓글인 경우 비밀번호"
     )

@@ -1,7 +1,7 @@
 import math
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, Header, Query, status
 
 from feature.board.application.service import BoardService, CommentService, PostService
 from feature.board.domain.board import Authority
@@ -22,8 +22,6 @@ from feature.board.presentation.schemas import (
     CreateBoardRequest,
     CreateCommentRequest,
     CreatePostRequest,
-    DeleteCommentRequest,
-    DeletePostRequest,
     PostDetailResponse,
     PostListItemResponse,
     PostPaginationResponse,
@@ -43,6 +41,11 @@ CommentServiceDep = Annotated[CommentService, Depends(provide_comment_service)]
 RoleDep = Annotated[Role, Depends(get_current_role)]
 MemberDep = Annotated[Author | None, Depends(get_current_author)]
 AdminDep = Annotated[Role, Depends(require_admin_role)]
+# 비회원 삭제 시 비밀번호 전달 — DELETE 바디는 의미가 정의되지 않아(RFC 9110) 헤더로 받는다
+GuestPasswordHeader = Annotated[
+    str | None,
+    Header(alias="X-Guest-Password", description="비회원 작성 시 등록한 비밀번호"),
+]
 
 
 def _to_authority(schema: AuthoritySchema | None) -> Authority | None:
@@ -244,12 +247,12 @@ async def delete_post(
     role: RoleDep,
     member: MemberDep,
     post_service: PostServiceDep,
-    request: DeletePostRequest | None = None,
+    guest_password: GuestPasswordHeader = None,
 ):
     await post_service.delete_post(
         post_id=post_id,
         requester_id=_requester_id(member),
-        guest_password=request.guest_password if request else None,
+        guest_password=guest_password,
         user_role=role,
     )
     return APIResponse.ok(message="게시글이 삭제되었습니다.")
@@ -327,12 +330,12 @@ async def delete_comment(
     role: RoleDep,
     member: MemberDep,
     comment_service: CommentServiceDep,
-    request: DeleteCommentRequest | None = None,
+    guest_password: GuestPasswordHeader = None,
 ):
     await comment_service.delete_comment(
         comment_id=comment_id,
         requester_id=_requester_id(member),
-        guest_password=request.guest_password if request else None,
+        guest_password=guest_password,
         user_role=role,
     )
     return APIResponse.ok(message="댓글이 삭제되었습니다.")
