@@ -8,6 +8,19 @@ from feature.board.domain.enums import PostSearchType, Role
 from feature.board.domain.post import Comment, Post
 
 
+def _require_persisted_id(entity_id: int | None, entity_name: str) -> int:
+    """
+    응답 변환 전 DB 발급 ID 존재 검증 (서버 내부 불변식)
+    - 도메인 엔티티는 저장 전 ID가 None이지만, 응답은 저장 완료된 엔티티만 대상으로 한다
+    - 클라이언트 낙관적 업데이트의 임시 ID와는 별개 — 서버는 ID 없는 리소스를 응답하지 않으며,
+      클라이언트는 이 응답의 실제 ID로 임시 ID를 교체한다
+    - None이면 저장 누락 버그이므로 500(처리되지 않은 예외)으로 드러낸다
+    """
+    if entity_id is None:
+        raise ValueError(f"응답 변환 불가: 저장되지 않은 {entity_name} (ID 없음)")
+    return entity_id
+
+
 class AuthoritySchema(BaseModel):
     """게시판 권한 세부 설정 스키마"""
 
@@ -148,7 +161,7 @@ class PostListItemResponse(BaseModel):
     @classmethod
     def from_domain(cls, post: Post) -> "PostListItemResponse":
         return cls(
-            post_id=post.post_id,  # type: ignore
+            post_id=_require_persisted_id(post.post_id, "게시글"),
             board_id=post.board_info.board_id,
             board_name=post.board_info.board_name,
             title=post.title,
@@ -170,7 +183,7 @@ class PostDetailResponse(PostListItemResponse):
     @classmethod
     def from_domain(cls, post: Post) -> "PostDetailResponse":
         return cls(
-            post_id=post.post_id,
+            post_id=_require_persisted_id(post.post_id, "게시글"),
             board_id=post.board_info.board_id,
             board_name=post.board_info.board_name,
             title=post.title,
@@ -232,7 +245,7 @@ class CommentResponse(BaseModel):
     @classmethod
     def from_domain(cls, comment: Comment) -> "CommentResponse":
         return cls(
-            comment_id=comment.comment_id,  # type: ignore
+            comment_id=_require_persisted_id(comment.comment_id, "댓글"),
             post_id=comment.post_id,
             content=comment.content,
             author=AuthorResponse(
