@@ -7,12 +7,14 @@ load_dotenv()
 from fastapi import FastAPI  # noqa: E402
 
 from feature.auth.presentation.routers.v1.router import router as auth_router  # noqa: E402
+from feature.board.presentation.routers.v1.router import router as board_router  # noqa: E402
 from feature.user.presentation.routers.v1.router import router as user_router  # noqa: E402
 from shared.core import database  # noqa: E402
 from shared.core.database import close_db  # noqa: E402
 from shared.core.exception_handlers import register_exception_handlers  # noqa: E402
 from shared.core.models import create_tables  # noqa: E402
 from wiring.auth import wire_auth  # noqa: E402
+from wiring.board import wire_board  # noqa: E402
 from wiring.user import wire_user  # noqa: E402
 
 
@@ -30,9 +32,11 @@ def create_app() -> FastAPI:
 
     wire_user(app)
     wire_auth(app)
+    wire_board(app)
 
     app.include_router(auth_router)
     app.include_router(user_router)
+    app.include_router(board_router)
     return app
 
 

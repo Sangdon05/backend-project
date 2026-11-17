@@ -1,9 +1,10 @@
 from datetime import datetime
 
-from feature.auth.domain.repository import TokenBlacklistRepository
-from feature.auth.infrastructure.models import TokenBlacklistModel
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from feature.auth.domain.repository import TokenBlacklistRepository
+from feature.auth.infrastructure.models import TokenBlacklistModel
 
 
 class SqlAlchemyTokenBlacklistRepository(TokenBlacklistRepository):

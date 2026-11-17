@@ -32,10 +32,9 @@ class SqlAlchemyBoardRepository(BoardRepository):
         return [BoardMapper.to_domain(model) for model in models]
 
     async def exists_by_id(self, board_id: str) -> bool:
-        """해당 게시판 ID가 이미 존재하는지 여부 확인"""
+        """해당 게시판 ID가 이미 존재하는지 여부 확인 (소프트 삭제된 게시판 포함 — PK 재사용 불가)"""
         stmt = select(func.count(BoardModel.board_id)).where(
-            BoardModel.board_id == board_id,
-            BoardModel.deleted_at.is_(None),
+            BoardModel.board_id == board_id
         )
 
         count = await self.session.scalar(stmt)

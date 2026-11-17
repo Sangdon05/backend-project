@@ -21,7 +21,7 @@ def provide_comment_repository() -> CommentRepository:
 
 # Service 의존성
 def provide_board_service() -> BoardService:
-    """FastAPI Depends 플레이스홀더 (container.py에서 바인딩)"""
+    """FastAPI Depends 플레이스홀더 (wiring/board.py에서 바인딩)"""
     raise NotImplementedError("BoardService 의존성이 주입되지 않았습니다.")
 
 

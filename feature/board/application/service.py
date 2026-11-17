@@ -126,7 +126,8 @@ class PostService:
         page_size: int | None = None,
         search_type: PostSearchType | str | None = None,
         keyword: str | None = None,
-    ) -> tuple[list[Post], int]:
+    ) -> tuple[list[Post], int, int]:
+        """[게시글 목록, 전체 개수, 적용된 페이지 크기] 반환"""
         board = await self._get_active_board(board_id)
         if not board.authority.can_list(user_role):
             raise ForbiddenException("게시글 목록 열람 권한이 없습니다.")
@@ -146,7 +147,7 @@ class PostService:
             search_type=search_type,
             keyword=keyword,
         )
-        return posts, total_count
+        return posts, total_count, size
 
     async def update_post(
         self,
